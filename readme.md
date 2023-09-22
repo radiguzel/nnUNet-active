@@ -3,32 +3,28 @@
 This repository explores the concept of active learning to determine the feasibility of training a machine learning model using minimal labeled data. I utilize nnUNet as a wrapper for the experiments. The training process begins with a small initial dataset and progressively improves the model's performance by iteratively incorporating additional labeled data, guided by various uncertainty-based sampling strategies.
 
 ## Uncertainty-Based Sampling Strategies
+
 One key aspect of our active learning approach is the utilization of uncertainty-based sampling strategies. These strategies assign an uncertainty score to each voxel at $(u, v, w)$ among $C$ classes within the dataset. This score is estimated as follows:
 
 - Confidence-based uncertainty estimation:
   $$Conf_{i}^{(u,v,w)} = 1 - \text{max} \left( \{ {P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C} \}\right) $$
 - Margin-based uncertainty estimation:
-  $$
-  \begin{aligned}
-   Margin_{i}^{(u,v,w)} = & \text{max}\left(\{P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right) \\&-\text{secondmax}\left(\{P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right)
-  \end{aligned}
-  $$
+  $$ Margin*{i}^{(u,v,w)} = \text{max}\left(\{P*{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right) \\-\text{secondmax}\left(\{P\_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right) $$
+
 - Entropy-based uncertainty estimation:
-  $$ E_{i}^{(u, v,w)} = -\sum_{c=1}^{C} P_{i}^{(u,v,w)}(c) \log \left(P_{i}^{(u,v,w)}(c)\right) $$
+  $$ E*{i}^{(u, v,w)} = -\sum*{c=1}^{C} P*{i}^{(u,v,w)}(c) \log \left(P*{i}^{(u,v,w)}(c)\right) $$
 - Variance-based uncertainty estimation:
-  $$ V_{i}^{(u,v,w)} = \text{var}\left(\{P_{i}^{(u, v,w)}(c):c=1,2,\ldots,C\}\right) $$
+  $$ V*{i}^{(u,v,w)} = \text{var}\left(\{P*{i}^{(u, v,w)}(c):c=1,2,\ldots,C\}\right) $$
 
 These uncertainty scores play a crucial role in guiding the selection of data samples for labeling during the active learning process. By focusing on the most uncertain data, the aim is to optimize the model's performance with minimal labeling effort.
 
 I also employ a similarity metric to select diverse samples. The final layer of the encoder, which encapsulates high-level features, serves as our point of reference. To assess similarity between two images, I utilize either a cosine similarity or a content distance metric.
-
 
 Once you've configured nnUNet, you can initiate the active learning process. To commence active learning, execute the `run_active.py` script, providing the `task` and the chosen sampling `strategy` as command-line arguments.
 
 ```bash
 run_active 501 confidenceSampling
 ```
-
 
 Original README from the author:
 
@@ -132,6 +128,7 @@ Python 2 is deprecated and not supported. Please make sure you are using Python 
 
 1. Install [PyTorch](https://pytorch.org/get-started/locally/). You need at least version 1.6
 2. Install nnU-Net depending on your use case:
+
    1. For use as **standardized baseline**, **out-of-the-box segmentation algorithm** or for running **inference with pretrained models**:
 
       `pip install nnunet`
@@ -142,14 +139,15 @@ Python 2 is deprecated and not supported. Please make sure you are using Python 
       cd nnUNet
       pip install -e .
       ```
+
 3. nnU-Net needs to know where you intend to save raw data, preprocessed data and trained models. For this you need to
    set a few of environment variables. Please follow the instructions [here](documentation/setting_up_paths.md).
 4. (OPTIONAL) Install [hiddenlayer](https://github.com/waleedka/hiddenlayer). hiddenlayer enables nnU-net to generate
    plots of the network topologies it generates (see [Model training](#model-training)). To install hiddenlayer,
    run the following commands:
    `bash
-    pip install --upgrade git+https://github.com/FabianIsensee/hiddenlayer.git@more_plotted_details#egg=hiddenlayer
-    `
+pip install --upgrade git+https://github.com/FabianIsensee/hiddenlayer.git@more_plotted_details#egg=hiddenlayer
+`
 
 Installing nnU-Net will add several new commands to your terminal. These commands are used to run the entire nnU-Net
 pipeline. You can execute them from any location on your system. All nnU-Net commands have the prefix `nnUNet_` for
