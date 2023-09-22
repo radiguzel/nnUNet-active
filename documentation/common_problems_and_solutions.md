@@ -1,22 +1,9 @@
 # Common Issues and their Solutions
 
-- [Common Issues and their Solutions](#common-issues-and-their-solutions)
-  * [RuntimeError: Expected scalar type half but found float](#runtimeerror--expected-scalar-type-half-but-found-float)
-  * [nnU-Net gets 'stuck' during preprocessing, training or inference](#nnu-net-gets--stuck--during-preprocessing--training-or-inference)
-  * [nnU-Net training: RuntimeError: CUDA out of memory](#nnu-net-training--runtimeerror--cuda-out-of-memory)
-  * [nnU-Net training in Docker container: RuntimeError: unable to write to file </torch_781_2606105346>](#nnu-net-training-in-docker-container--runtimeerror--unable-to-write-to-file---torch-781-2606105346-)
-  * [Downloading pretrained models: unzip: cannot find zipfile directory in one of /home/isensee/.nnunetdownload_16031094034174126](#downloading-pretrained-models--unzip--cannot-find-zipfile-directory-in-one-of--home-isensee-nnunetdownload-16031094034174126)
-  * [Downloading pre-trained models: `unzip: 'unzip' is not recognized as an internal or external command` OR `Command 'unzip' not found`](#downloading-pre-trained-models---unzip---unzip--is-not-recognized-as-an-internal-or-external-command--or--command--unzip--not-found-)
-  * [nnU-Net training (2D U-Net): High (and increasing) system RAM usage, OOM](#nnu-net-training--2d-u-net---high--and-increasing--system-ram-usage--oom)
-  * [nnU-Net training of cascade: Error `seg from prev stage missing`](#nnu-net-training-of-cascade--error--seg-from-prev-stage-missing-)
-  * [nnU-Net training: `RuntimeError: CUDA error: device-side assert triggered`](#nnu-net-training---runtimeerror--cuda-error--device-side-assert-triggered-)
-  * [nnU-Net training: Error: mmap length is greater than file size and EOFError](#nnu-net-training--error--mmap-length-is-greater-than-file-size-and-eoferror)
-  * [running nnU-Net on Azure instances](#running-nnu-net-on-azure-instances)
-
 ## RuntimeError: Expected scalar type half but found float
 
 This can happen when running inference (or training) with mixed precision enabled on older GPU hardware. It points 
-to some operations not being implemented in half precision for the type of GPU you are using. There are flags to enforce
+to some operation not being implemented in half precision for the type of GPU you are using. There are flags to enforce
  the use of fp32 for both nnUNet_predict and nnUNet_train. If you run into this error, using these flags will probably 
  solve it. See `nnUNet_predict -h` and `nnUNet_train -h` for what the flags are.
 
@@ -57,7 +44,7 @@ To ensure that you can run all trainings, we recommend to use a GPU with at leas
 If you are running other programs on the GPU you intend to train on (for example the GUI of your operating system), 
 the amount of VRAM available to nnU-Net is less than whatever is on your GPU. Please close all unnecessary programs or 
 invest in a second GPU. We for example like to use a low cost GPU (GTX 1050 or slower) for the display outputs while 
-having the 2080ti (or equivalant) handle the training.
+having the 2080ti (or equivelant) handle the training.
 
 At the start of each training, cuDNN will run some benchmarks in order to figure out the fastest convolution algorithm 
 for the current network architecture (we use `torch.backends.cudnn.benchmark=True`). VRAM consumption will jump all over
@@ -104,16 +91,13 @@ TensorInfo<long, IndexType>, Real, int, IndexType) [with IndexType = unsigned in
 block: [4770,0,0], thread: [374,0,0] Assertion indexValue >= 0 && indexValue < tensor.sizes[dim] failed.`.
 
 This means that your dataset contains unexpected values in the segmentations. nnU-Net expects all labels to be 
-consecutive integers. So if your dataset has 4 classes (background and three foreground labels), then the labels 
+consecutive integers. So if your dataset has 4 classes (background and three foregound labels), then the labels 
 must be 0, 1, 2, 3 (where 0 must be background!). There cannot be any other values in the ground truth segmentations.
 
 If you run `nnUNet_plan_and_preprocess` with the `--verify_dataset_integrity` option, this should never happen because 
 it will check for wrong values in the label images.
 
 ## nnU-Net training: Error: mmap length is greater than file size and EOFError
-Please delete all .npy files in the nnUNet_preprocessed folder of the test you were trying to train. Then try again.
-
-## nnU-Net training: Error: MultiThreadedAugmenter.abort_event was set, something went wrong. Maybe one of your workers crashed. This is not the actual error message! Look further up your stdout to see what caused the error. Please also check whether your RAM was full
 Please delete all .npy files in the nnUNet_preprocessed folder of the test you were trying to train. Then try again.
 
 ## running nnU-Net on Azure instances

@@ -16,7 +16,7 @@ This section gives guidance on how to implement changes to loss function, traini
 some architecture parameters, data augmentation etc. All these parameters are part of the **nnU-Net trainer class**, 
 which we have already seen in the sections above. The default trainer class for 2D, 3D low resolution and 3D full 
 resolution U-Net is nnUNetTrainerV2, the default for the 3D full resolution U-Net from the cascade is 
-nnUNetTrainerV2CascadeFullRes. Trainer classes in nnU-Net inherit from each other, nnUNetTrainerV2CascadeFullRes for 
+nnUNetTrainerV2CascadeFullRes. Trainer classes in nnU-Net inherit form each other, nnUNetTrainerV2CascadeFullRes for 
 example has nnUNetTrainerV2 as parent class and only overrides cascade-specific code.
 
 Due to the inheritance of trainer classes, changes can be integrated into nnU-Net quite easily and with minimal effort. 
@@ -47,7 +47,7 @@ blueprint variations which should give a good indication of where to start:
 ## Changes to Inferred Parameters
 The inferred parameters are determined based on the dataset fingerprint, a low dimensional representation of the properties 
 of the training cases. It captures, for example, the image shapes, voxel spacings and intensity information from 
-the training cases. The dataset fingerprint is created by the DatasetAnalyzer (which is located in nnunet.preprocessing) 
+the training cases. The datset fingerprint is created by the DatasetAnalyzer (which is located in nnunet.preprocessing) 
 while running `nnUNet_plan_and_preprocess`. 
 
 `nnUNet_plan_and_preprocess` uses so called ExperimentPlanners for running the adaptation process. Default ExperimentPlanner 
@@ -55,7 +55,7 @@ classes are ExperimentPlanner2D_v21 for the 2D U-Net and ExperimentPlanner3D_v21
 U-Net cascade. Just like nnUNetTrainers, the ExperimentPlanners inherit from each other, resulting in minimal programming 
 effort to incorporate changes. Just like with the trainers, simply give your custom ExperimentPlanners a unique name and 
 save them in some subfolder of nnunet.experiment_planning. You can then specify your class names when running 
-`nnUNet_plan_and_preprocess` and nnU-Net will find them automatically. When inheriting from ExperimentPlanners, you **MUST** 
+`nnUNet_plan_and_preprocess` and nnU-Net will find them automatically. When inheriting form ExperimentPlanners, you **MUST** 
 overwrite the class variables `self.data_identifier` and `self.plans_fname` (just like for example 
 [here](../nnunet/experiment_planning/alternative_experiment_planning/normalization/experiment_planner_3DUNet_CT2.py)). 
 If you omit this step the planner will overwrite the plans file and the preprocessed data of the planner it inherits from.
@@ -65,7 +65,7 @@ To train with your custom configuration, simply specify the correct plans identi
 trainer class will automatically know what data should be used.
 
 Possible adaptations to the inferred parameters could include a different way of prioritizing batch size vs patch size 
-(currently, nnU-Net prioritizes patch size), a different handling of the spacing information for architecture template 
+(currently, nnU-Net prioritizies patch size), a different handling of the spacing information for architecture template 
 instantiation, changing the definition of target spacing, or using different strategies for finding the 3d low 
 resolution U-Net configuration.
 
@@ -90,7 +90,7 @@ This experiment planner must also use a matching data_identifier and plans_fname
 ## Use a different network architecture
 Changing the network architecture in nnU-Net is easy, but not self-explanatory. Any new segmentation network you implement 
 needs to understand what nnU-Net requests from it (wrt how many downsampling operations are done, whether deep supervision 
-is used, what the convolutional kernel sizes are supposed to be). It needs to be able to dynamically change its topology, 
+is used, what the convolutional kernel sizes are supposed to be). It needs to be able to dynamiccaly change its topology, 
 just like our implementation of the [Generic_UNet](../nnunet/network_architecture/generic_UNet.py). Furthermore, it must be
 able to generate a value that can be used to estimate memory consumption. What we have implemented for Generic_UNet effectively
 counts the number of voxels found in all feature maps that are present in a given configuration. Although this estimation 
@@ -101,7 +101,7 @@ number we are computing here cannot be interpreted directly as memory consumptio
 of the convolutions also play a role, such as instance normalization. This is furthermore very hard to predict because 
 there are also several different algorithms for running the convolutions, each with its own memory requirement. We train 
 models with cudnn.benchmark=True, so it is impossible to predict which algorithm is used). 
-So instead, to approach this problem in the most straightforward way, we manually identify the largest configuration we 
+So instead, to approch this problem in the most straightforward way, we manually identify the largest configuration we 
 can fit in the GPU of choice (manually define the dowmsampling, patch size etc) and use this value (-10% or so to be save) 
 as **reference** in the ExperimentPlanner that uses this architecture. 
 

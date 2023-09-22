@@ -21,7 +21,7 @@ import numpy as np
 from nnunet.network_architecture.initialization import InitWeights_He
 from nnunet.network_architecture.neural_network import SegmentationNetwork
 import torch.nn.functional
-
+import os
 
 class ConvDropoutNormNonlin(nn.Module):
     """
@@ -225,6 +225,11 @@ class Generic_UNet(SegmentationNetwork):
         self.final_nonlin = final_nonlin
         self._deep_supervision = deep_supervision
         self.do_ds = deep_supervision
+        #my parameter fpr saving the last encoder layer
+        self.save_last_encoder = False
+        self.last_layer_directory = None
+        self.sample_name = None
+        self.counter = 0
 
         if conv_op == nn.Conv2d:
             upsample_mode = 'bilinear'
@@ -394,7 +399,13 @@ class Generic_UNet(SegmentationNetwork):
                 x = self.td[d](x)
 
         x = self.conv_blocks_context[-1](x)
-
+        
+        if self.save_last_encoder and self.last_layer_directory is not None:
+            assert self.sample_name != None
+            np.save(os.path.join(self.last_layer_directory,self.sample_name), x.cpu().detach().numpy())
+            self.counter += 1
+            # print('Saved successfully-%d: %s' % (self.counter, str(x.size())))
+        
         for u in range(len(self.tu)):
             x = self.tu[u](x)
             x = torch.cat((x, skips[-(u + 1)]), dim=1)

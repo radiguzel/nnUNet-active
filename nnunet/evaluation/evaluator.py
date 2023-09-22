@@ -477,15 +477,7 @@ def nnunet_evaluate_folder():
                                                                        "liver, 2: tumor. So this argument "
                                                                        "should be -l 1 2. You can if you want also "
                                                                        "evaluate the background label (0) but in "
-                                                                       "this case that would not give any useful "
+                                                                       "this case that would not gie any useful "
                                                                        "information.")
     args = parser.parse_args()
     return evaluate_folder(args.ref, args.pred, args.l)
-
-
-if __name__ == '__main__':
-    evaluate_folder(
-        '/media/isensee/raw_data/nnUNet_raw/Dataset004_Hippocampus/labelsTr',
-        '/home/isensee/drives/checkpoints/nnUNet_results_remake/Dataset999_IntegrationTest_Hippocampus/ensembles/ensemble___nnUNetTrainer_5epochs__nnUNetPlans__3d_cascade_fullres___nnUNetTrainer_5epochs__nnUNetPlans__3d_fullres___0_1_2_3_4',
-        (1, 2), advanced=True
-    )

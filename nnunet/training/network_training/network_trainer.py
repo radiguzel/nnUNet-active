@@ -348,7 +348,7 @@ class NetworkTrainer(object):
 
         new_state_dict = OrderedDict()
         curr_state_dict_keys = list(self.network.state_dict().keys())
-        # if state dict comes from nn.DataParallel but we use non-parallel model here then the state dict keys do not
+        # if state dict comes form nn.DataParallel but we use non-parallel model here then the state dict keys do not
         # match. Use heuristic to make it match
         for k, value in checkpoint['state_dict'].items():
             key = k
@@ -493,13 +493,27 @@ class NetworkTrainer(object):
             self.print_to_log_file("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
 
         self.epoch -= 1  # if we don't do this we can get a problem with loading model_final_checkpoint.
-
+        
+        if not isdir(self.output_folder_1):
+            # print("output_folder fold_1 created!")
+            os.mkdir(self.output_folder_1)
+        
         if self.save_final_checkpoint: self.save_checkpoint(join(self.output_folder, "model_final_checkpoint.model"))
         # now we can delete latest as it will be identical with final
         if isfile(join(self.output_folder, "model_latest.model")):
             os.remove(join(self.output_folder, "model_latest.model"))
         if isfile(join(self.output_folder, "model_latest.model.pkl")):
             os.remove(join(self.output_folder, "model_latest.model.pkl"))
+
+
+        #added to save also at fold1 output so that we can use in the validation set
+        if self.save_final_checkpoint and self.fold == 0: 
+            self.save_checkpoint(join(self.output_folder_1, "model_final_checkpoint.model"))
+                    # now we can delete latest as it will be identical with final
+            if isfile(join(self.output_folder_1, "model_latest.model")):
+                os.remove(join(self.output_folder_1, "model_latest.model"))
+            if isfile(join(self.output_folder_1, "model_latest.model.pkl")):
+                os.remove(join(self.output_folder_1, "model_latest.model.pkl"))
 
     def maybe_update_lr(self):
         # maybe update learning rate
@@ -522,7 +536,11 @@ class NetworkTrainer(object):
             self.print_to_log_file("saving scheduled checkpoint file...")
             if not self.save_latest_only:
                 self.save_checkpoint(join(self.output_folder, "model_ep_%03.0d.model" % (self.epoch + 1)))
+                if self.fold == 0:
+                    self.save_checkpoint(join(self.output_folder_1, "model_ep_%03.0d.model" % (self.epoch + 1)))
             self.save_checkpoint(join(self.output_folder, "model_latest.model"))
+            if self.fold == 0:
+                self.save_checkpoint(join(self.output_folder_1, "model_latest.model"))
             self.print_to_log_file("done")
 
     def update_eval_criterion_MA(self):
@@ -575,7 +593,7 @@ class NetworkTrainer(object):
                 self.best_val_eval_criterion_MA = self.val_eval_criterion_MA
                 #self.print_to_log_file("saving best epoch checkpoint...")
                 if self.save_best_checkpoint: self.save_checkpoint(join(self.output_folder, "model_best.model"))
-
+                if self.save_best_checkpoint and self.fold == 0: self.save_checkpoint(join(self.output_folder_1, "model_best.model"))
             # Now see if the moving average of the train loss has improved. If yes then reset patience, else
             # increase patience
             if self.train_loss_MA + self.train_loss_MA_eps < self.best_MA_tr_loss_for_patience:

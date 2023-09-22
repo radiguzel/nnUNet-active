@@ -184,6 +184,8 @@ class nnUNetTrainerV2_fullEvals(nnUNetTrainerV2):
             if here >= target:
                 self.print_to_log_file("I am done!")
                 self.save_checkpoint(join(self.output_folder, "model_final_checkpoint.model"))
+                if self.fold == 0:
+                    self.save_checkpoint(join(self.output_folder_1, "model_final_checkpoint.model"))
                 return_value = False # this triggers early stopping
 
         ret_old = super().on_epoch_end()

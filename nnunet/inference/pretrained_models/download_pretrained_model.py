@@ -17,8 +17,7 @@ import zipfile
 from time import time
 
 import requests
-from batchgenerators.utilities.file_and_folder_operations import join, isfile, isdir
-from tqdm import tqdm
+from batchgenerators.utilities.file_and_folder_operations import join, isfile
 
 from nnunet.paths import network_training_output_dir
 
@@ -174,7 +173,7 @@ def get_available_models():
         },
         "Task082_BraTS2020": {
             'description': "Brain tumor segmentation challenge 2020 (BraTS)\n"
-                           "Segmentation targets are 0: background, 1: edema, 2: necrosis, 3: enhancing tumor\n"
+                           "Segmentation targets are 0: background, 1: edema, 2: enhancing tumor, 3: necrosis\n"
                            "Input modalities are 0: T1, 1: T1ce, 2: T2, 3: FLAIR (MRI images)\n"
                            "Also see https://www.med.upenn.edu/cbica/brats2020/",
             'url': (
@@ -223,15 +222,6 @@ def get_available_models():
                "https://zenodo.org/record/5126443/files/Task135_KiTS2021.zip?download=1",
            )
        },
-        "Task169_BrainTumorPET": {
-            'description': "Brain tumor segmentation in FET PET images. Data originates from the Research Center Jülich, Germany.\n"
-                           "Predicted labels are 0: background, 1: tumor\n"
-                           "Input modalities are 0: FET PET\n"
-                           "See also (NOT YET AVAILABLE)",
-            'url': (
-                "https://zenodo.org/record/8189234/files/nnUNet_FZJ_v2.zip?download=1",
-            )
-        },
     }
     return available_models
 
@@ -243,19 +233,6 @@ def print_available_pretrained_models():
         print('')
         print(m)
         print(av_models[m]['description'])
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--export', help="Specify the folder name for saving the json file.", required=False)
-    args = parser.parse_args()
-    json_output_dir = args.export
-    if json_output_dir:
-        import json
-        if isdir(json_output_dir):
-            with open(args.export + '/available_models.json', 'w', encoding='utf8') as json_file:
-                json.dump(av_models, json_file, indent=1)
-            print("Data successfully exported to", join(json_output_dir, 'available_models.json'))
-        else:
-            print("Please specify a folder path.")
 
 
 def download_and_install_pretrained_model_by_name(taskname):
@@ -300,23 +277,16 @@ def download_and_install_from_url(url):
             os.remove(tempfile)
 
 
-def download_file(url: str, local_filename: str, chunk_size: Optional[int] = 8192 * 16) -> str:
+def download_file(url: str, local_filename: str, chunk_size: Optional[int] = None) -> str:
     # borrowed from https://stackoverflow.com/questions/16694907/download-large-file-in-python-with-requests
     # NOTE the stream=True parameter below
-    # OpenRefactory Warning: The 'requests.get' method does not use any 'timeout' threshold which may cause program to hang indefinitely.
-    with requests.get(url, stream=True, timeout=100) as r:
+    with requests.get(url, stream=True) as r:
         r.raise_for_status()
-        # with open(local_filename, 'wb') as f:
-        #     for chunk in r.iter_content(chunk_size=chunk_size):
-        #         # If you have chunk encoded response uncomment if
-        #         # and set chunk_size parameter to None.
-        #         #if chunk:
-        #         f.write(chunk)
-        with tqdm.wrapattr(open(local_filename, 'wb'), "write", total=int(r.headers.get("Content-Length"))) as f:
+        with open(local_filename, 'wb') as f:
             for chunk in r.iter_content(chunk_size=chunk_size):
                 # If you have chunk encoded response uncomment if
                 # and set chunk_size parameter to None.
-                # if chunk:
+                #if chunk:
                 f.write(chunk)
     return local_filename
 

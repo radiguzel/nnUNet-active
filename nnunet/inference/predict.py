@@ -21,14 +21,7 @@ import numpy as np
 from batchgenerators.augmentations.utils import resize_segmentation
 from nnunet.inference.segmentation_export import save_segmentation_nifti_from_softmax, save_segmentation_nifti
 from batchgenerators.utilities.file_and_folder_operations import *
-import sys
-if 'win' in sys.platform:
-    #fix for windows platform
-    import pathos
-    Process = pathos.helpers.mp.Process
-    Queue = pathos.helpers.mp.Queue
-else:
-    from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue
 import torch
 import SimpleITK as sitk
 import shutil
@@ -265,9 +258,6 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
                 "This output is too large for python process-process communication. Saving output temporarily to disk")
             np.save(output_filename[:-7] + ".npy", softmax)
             softmax = output_filename[:-7] + ".npy"
-        # save_segmentation_nifti_from_softmax(softmax, output_filename, dct, interpolation_order, region_class_order,
-        #                                     None, None,
-        #                                     npz_file, None, force_separate_z, interpolation_order_z)
 
         results.append(pool.starmap_async(save_segmentation_nifti_from_softmax,
                                           ((softmax, output_filename, dct, interpolation_order, region_class_order,
@@ -773,7 +763,7 @@ if __name__ == "__main__":
     parser.add_argument('--disable_mixed_precision', default=False, action='store_true', required=False,
                         help='Predictions are done with mixed precision by default. This improves speed and reduces '
                              'the required vram. If you want to disable mixed precision you can set this flag. Note '
-                             'that this is not recommended (mixed precision is ~2x faster!)')
+                             'that yhis is not recommended (mixed precision is ~2x faster!)')
 
     args = parser.parse_args()
     input_folder = args.input_folder
