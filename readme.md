@@ -7,13 +7,13 @@ This repository explores the concept of active learning to determine the feasibi
 One key aspect of our active learning approach is the utilization of uncertainty-based sampling strategies. These strategies assign an uncertainty score to each voxel at $(u, v, w)$ among $C$ classes within the dataset. This score is estimated as follows:
 
 - Confidence-based uncertainty estimation:
-  $$ Conf_{i}^{(u,v,w)} = 1 - \text{max} \left( \{ {P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C} \}\right) $$
+  $$Conf_{i}^{(u,v,w)} = 1 - \text{max} \left( \{ {P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C} \}\right)$$
 - Margin-based uncertainty estimation:
-  $$ Margin_{i}^{(u,v,w)} = \text{max}\left(\{P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right)- \text{secondmax}\left(\{P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right) $$
+  $$Margin_{i}^{(u,v,w)} = \text{max}\left(\{P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right)- \text{secondmax}\left(\{P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right)$$
 - Entropy-based uncertainty estimation:
-  $$ E_{i}^{(u, v,w)} = -\sum_{c=1}^{C} P_{i}^{(u,v,w)}(c) \log \left(P_{i}^{(u,v,w)}(c)\right) $$
+  $$E_{i}^{(u, v,w)} = -\sum_{c=1}^{C} P_{i}^{(u,v,w)}(c) \log \left(P_{i}^{(u,v,w)}(c)\right)$$
 - Variance-based uncertainty estimation:
-  $$ V_{i}^{(u,v,w)} = \text{var}\left(\{P_{i}^{(u, v,w)}(c):c=1,2,\ldots,C\}\right) $$
+  $$V_{i}^{(u,v,w)} = \text{var}\left(\{P_{i}^{(u, v,w)}(c):c=1,2,\ldots,C\}\right)$$
 
 These uncertainty scores play a crucial role in guiding the selection of data samples for labeling during the active learning process. By focusing on the most uncertain data, the aim is to optimize the model's performance with minimal labeling effort.
 
