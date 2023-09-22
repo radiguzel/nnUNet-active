@@ -9,7 +9,7 @@ One key aspect of our active learning approach is the utilization of uncertainty
 - Confidence-based uncertainty estimation:
   $$Conf_{i}^{(u,v,w)} = 1 - \text{max} \left( \{ {P_{i}^{(u,v,w)}(c):c=1,2,\ldots,C} \}\right) $$
 - Margin-based uncertainty estimation:
-  $$ Margin*{i}^{(u,v,w)} = \text{max}\left(\{P*{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right) \\-\text{secondmax}\left(\{P\_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right) $$
+  $$ Margin*{i}^{(u,v,w)} = \text{max}\left(\{P*{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right) -\text{secondmax}\left(\{P\_{i}^{(u,v,w)}(c):c=1,2,\ldots,C\}\right) $$
 
 - Entropy-based uncertainty estimation:
   $$ E*{i}^{(u, v,w)} = -\sum*{c=1}^{C} P*{i}^{(u,v,w)}(c) \log \left(P*{i}^{(u,v,w)}(c)\right) $$
